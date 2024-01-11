@@ -107,7 +107,7 @@ public class CustomerService {
 
 		customer = customerRepository.save(customer);
 
-//		addAddressToCustomer(customer, customerRequestDto);
+		addAddressToCustomer(customer, customerRequestDto);
 
 		return CustomerDto.builder()
 				.id(customer.getId())
