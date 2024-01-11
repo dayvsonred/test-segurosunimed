@@ -1,6 +1,7 @@
 package com.example.api.service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import com.example.api.DTO.CustomerDto;
 import com.example.api.DTO.CustomerRequestDto;
@@ -10,6 +11,7 @@ import com.example.api.exceptions.CustomerBadRequestException;
 import com.example.api.exceptions.CustomerNotFoundException;
 import javassist.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -81,7 +83,7 @@ public class CustomerService {
 
 	public Page<CustomerDto> searchCustomers(String name, String email, String gender, Pageable pageable) {
 		return customerRepository.findByAttributes(name, email, gender, pageable)
-				.map(CustomerDto::fromEntity); // Método estático para converter Customer para CustomerDto
+				.map(CustomerDto::fromEntity);
 	}
 
 
@@ -195,4 +197,22 @@ public class CustomerService {
 		return customerRepository.save(customer);
 	}
 
+	public List<CustomerDto> filterCustomersByLocationAndUf(String localidade, String uf) {
+		List<Customer> filteredCustomers;
+
+		if (localidade != null && uf != null) {
+			filteredCustomers = customerRepository.findByAddressesLocalidadeAndAddressesUf(localidade, uf);
+		} else if (localidade != null) {
+			filteredCustomers = customerRepository.findByAddressesLocalidade(localidade);
+		} else if (uf != null) {
+			filteredCustomers =  customerRepository.findByAddressesUf(uf);
+		} else {
+			filteredCustomers =  new ArrayList<Customer>();
+		}
+
+		return filteredCustomers.stream()
+				.map(CustomerDto::fromEntity)
+				.collect(Collectors.toList());
+
+	}
 }

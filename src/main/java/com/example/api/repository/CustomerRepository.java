@@ -18,6 +18,9 @@ public interface CustomerRepository extends CrudRepository<Customer, Long> {
 	Optional<Customer> findByEmail(String email);
 	List<Customer> findByEmailContainingIgnoreCase(String email);
 	List<Customer> findByGender(String gender);
+	List<Customer> findByAddressesLocalidadeAndAddressesUf(String localidade, String uf);
+	List<Customer> findByAddressesLocalidade(String localidade);
+	List<Customer> findByAddressesUf(String uf);
 
 	@Query("SELECT c FROM Customer c WHERE " +
 			"(:name IS NULL OR c.name LIKE %:name%) AND " +

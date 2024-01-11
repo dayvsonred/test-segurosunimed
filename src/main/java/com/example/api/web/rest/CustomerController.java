@@ -88,4 +88,12 @@ public class CustomerController {
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 
+	@GetMapping("/filterByCiteAndState")
+	public ResponseEntity<List<CustomerDto>> filterCustomersByLocationAndUf(
+			@RequestParam(required = false) String cidade,
+			@RequestParam(required = false) String estado) {
+		List<CustomerDto> filteredCustomers = customerService.filterCustomersByLocationAndUf(cidade, estado.toUpperCase());
+		return ResponseEntity.ok(filteredCustomers);
+	}
+
 }

@@ -31,6 +31,7 @@ public class CustomerDto implements Serializable {
         customerDto.setName(customer.getName());
         customerDto.setEmail(customer.getEmail());
         customerDto.setGender(customer.getGender());
+        customerDto.setAddresses(customer.getAddresses());
         return customerDto;
     }
 }
