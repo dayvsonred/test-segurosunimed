@@ -29,15 +29,13 @@ public class CustomerService {
 
 	private CustomerRepository customerRepository;
 	private AddressService addressService;
-//	private ViaCepService viaCepService;
+	private ViaCepService viaCepService;
 
 	@Autowired
-	public CustomerService(CustomerRepository customerRepository, AddressService addressService
-//			, ViaCepService viaCepService
-	) {
+	public CustomerService(CustomerRepository customerRepository, AddressService addressService, ViaCepService viaCepService) {
 		this.customerRepository = customerRepository;
 		this.addressService = addressService;
-//		this.viaCepService = viaCepService;
+		this.viaCepService = viaCepService;
 	}
 
 	public List<Customer> findAll() {
@@ -147,34 +145,34 @@ public class CustomerService {
 		}
 	}
 
-//	@Async
-//	public void addAddressToCustomer(Customer customer, CustomerRequestDto customerRequestDto) {
-//		try {
-//			log.info("Begin addAddressToCustomer customer id: {} and CEP: {}", customer.getId(), customerRequestDto.getCep());
-//			ViaCepResponseDto viaCepResponseDto = viaCepService.getCep(customerRequestDto.getCep());
-//
-//			customer.getAddresses().add(Address.builder()
-//					.cep(viaCepResponseDto.getCep())
-//					.logradouro(viaCepResponseDto.getLogradouro())
-//					.complemento(viaCepResponseDto.getComplemento())
-//					.bairro(viaCepResponseDto.getBairro())
-//					.localidade(viaCepResponseDto.getLocalidade())
-//					.uf(viaCepResponseDto.getUf())
-//					.ibge(viaCepResponseDto.getIbge())
-//					.gia(viaCepResponseDto.getGia())
-//					.ddd(fixToIntDDD(viaCepResponseDto.getDdd()))
-//					.siafi(viaCepResponseDto.getSiafi())
-//					.build());
-//
-//			updateCustomerAddress(customer);
-//
-//			log.info("Finished Success addAddressToCustomer customer id: {} and CEP: {}", customer.getId(), customerRequestDto.getCep());
-//		}catch (Exception e){
-//			log.error(e.getMessage());
-//			throw new RuntimeException("ERROR VIA CEP INTEGRATION customer id: " + customer.getId()
-//					+ ", CEP: " + customerRequestDto.getCep());
-//		}
-//	}
+	@Async
+	public void addAddressToCustomer(Customer customer, CustomerRequestDto customerRequestDto) {
+		try {
+			log.info("Begin addAddressToCustomer customer id: {} and CEP: {}", customer.getId(), customerRequestDto.getCep());
+			ViaCepResponseDto viaCepResponseDto = viaCepService.getCep(customerRequestDto.getCep());
+
+			customer.getAddresses().add(Address.builder()
+					.cep(viaCepResponseDto.getCep())
+					.logradouro(viaCepResponseDto.getLogradouro())
+					.complemento(viaCepResponseDto.getComplemento())
+					.bairro(viaCepResponseDto.getBairro())
+					.localidade(viaCepResponseDto.getLocalidade())
+					.uf(viaCepResponseDto.getUf())
+					.ibge(viaCepResponseDto.getIbge())
+					.gia(viaCepResponseDto.getGia())
+					.ddd(fixToIntDDD(viaCepResponseDto.getDdd()))
+					.siafi(viaCepResponseDto.getSiafi())
+					.build());
+
+			updateCustomerAddress(customer);
+
+			log.info("Finished Success addAddressToCustomer customer id: {} and CEP: {}", customer.getId(), customerRequestDto.getCep());
+		}catch (Exception e){
+			log.error(e.getMessage());
+			throw new RuntimeException("ERROR VIA CEP INTEGRATION customer id: " + customer.getId()
+					+ ", CEP: " + customerRequestDto.getCep());
+		}
+	}
 
 	public void updateCustomerAddress(Customer customer) {
 		customerRepository.save(customer);
