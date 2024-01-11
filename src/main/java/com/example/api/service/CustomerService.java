@@ -26,13 +26,11 @@ import org.springframework.web.server.ResponseStatusException;
 public class CustomerService {
 
 	private CustomerRepository customerRepository;
-	private AddressService addressService;
 	private ViaCepService viaCepService;
 
 	@Autowired
-	public CustomerService(CustomerRepository customerRepository, AddressService addressService, ViaCepService viaCepService) {
+	public CustomerService(CustomerRepository customerRepository, ViaCepService viaCepService) {
 		this.customerRepository = customerRepository;
-		this.addressService = addressService;
 		this.viaCepService = viaCepService;
 	}
 
@@ -144,7 +142,7 @@ public class CustomerService {
 	}
 
 	@Async
-	public void addAddressToCustomer(Customer customer, CustomerRequestDto customerRequestDto) {
+	private void addAddressToCustomer(Customer customer, CustomerRequestDto customerRequestDto) {
 		try {
 			//if campo CEP não for vasio
 			log.info("Begin addAddressToCustomer customer id: {} and CEP: {}", customer.getId(), customerRequestDto.getCep());
@@ -178,13 +176,23 @@ public class CustomerService {
 		customerRepository.save(customer);
 	}
 
-	private Integer fixToIntDDD(String ddd){
+	public Integer fixToIntDDD(String ddd){
 		try {
 			return Integer.valueOf(ddd);
 		}catch (Exception e){
 			log.info("Failed to convert DDD: {}", ddd);
 			return 0;
 		}
+	}
+
+	public Customer addAddressToCustomer(Long customerId, Address address) {
+		Customer customer = customerRepository.findById(customerId)
+				.orElseThrow(() -> new CustomerNotFoundException("Cliente não encontrado com o ID: " + customerId));
+
+		address.setCustomer(customer);
+		customer.getAddresses().add(address);
+
+		return customerRepository.save(customer);
 	}
 
 }

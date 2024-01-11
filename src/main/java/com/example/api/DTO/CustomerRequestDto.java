@@ -25,7 +25,8 @@ public class CustomerRequestDto implements Serializable {
     @NotEmpty
     private String gender;
 
-    @NotBlank(message = "O CPE não pode estar em branco")
-    @NotEmpty
+    @NotBlank(message = "O CEP não pode estar em branco")
+    @Size(min = 8, max = 8, message = "O CEP deve ter 8 caracteres")
+    @Pattern(regexp = "\\d{8}", message = "Formato de CEP inválido")
     private String cep;
 }
