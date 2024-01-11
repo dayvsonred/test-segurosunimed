@@ -1,8 +1,6 @@
 package com.example.api.service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import com.example.api.DTO.CustomerDto;
 import com.example.api.DTO.CustomerRequestDto;
@@ -90,9 +88,9 @@ public class CustomerService {
 
 
 	public void validExistCustomerWithEmail(String email){
-			customerRepository.findByEmail(email).orElseThrow(
-					() -> new CustomerBadRequestException("Cliente já cadastrado com email: " + email)
-			);
+			customerRepository.findByEmail(email).ifPresent( customer -> {
+				throw new CustomerBadRequestException("Cliente já cadastrado com email: " + email);
+			});
 	}
 
 	public CustomerDto createCustomer(CustomerRequestDto customerRequestDto) {
@@ -101,7 +99,7 @@ public class CustomerService {
 				customerRequestDto.getName(),
 				customerRequestDto.getEmail(),
 				customerRequestDto.getGender(),
-				null
+				new ArrayList<Address>()
 		);
 		this.validExistCustomerWithEmail(customerRequestDto.getEmail());
 
@@ -148,6 +146,7 @@ public class CustomerService {
 	@Async
 	public void addAddressToCustomer(Customer customer, CustomerRequestDto customerRequestDto) {
 		try {
+			//if campo CEP não for vasio
 			log.info("Begin addAddressToCustomer customer id: {} and CEP: {}", customer.getId(), customerRequestDto.getCep());
 			ViaCepResponseDto viaCepResponseDto = viaCepService.getCep(customerRequestDto.getCep());
 
@@ -162,6 +161,7 @@ public class CustomerService {
 					.gia(viaCepResponseDto.getGia())
 					.ddd(fixToIntDDD(viaCepResponseDto.getDdd()))
 					.siafi(viaCepResponseDto.getSiafi())
+							.customer(Customer.builder().id(customer.getId()).build())
 					.build());
 
 			updateCustomerAddress(customer);

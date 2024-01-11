@@ -1,5 +1,6 @@
 package com.example.api.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 
 import javax.persistence.*;
@@ -31,6 +32,7 @@ public class Address implements Serializable {
     private Integer ddd;
     private String siafi;
 
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
